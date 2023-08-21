@@ -1,0 +1,55 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+    id              Int         @id @default(autoincrement())
+    name            String
+    email_address   String      @unique
+    icon            String?
+    password        String
+    created_at      DateTime    @default(now())
+    updated_at      DateTime    @updatedAt @default(now())
+}
+
+model Order {
+  id              Int         @id @default(autoincrement())
+  order_nr        Int  
+  order_items     OrderItem[]
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt @default(now())
+}
+
+model OrderItem {
+  id              Int         @id @default(autoincrement())
+  order           Order       @relation(fields: [order_id], references: [id])
+  order_id        Int
+  item            Item        @relation(fields: [item_id], references: [id])
+  item_id         Int
+  amount          Int         @default(1)
+  created_at      DateTime    @default(now())
+}
+
+model Item {
+  id              Int         @id @default(autoincrement())
+  category        Category    @relation(fields: [category_id], references: [id])
+  category_id     Int
+  order_items     OrderItem[]
+  price           Decimal     @db.Decimal(10, 2)
+  name            String
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt @default(now())
+}
+
+model Category {
+  id              Int         @id @default(autoincrement())
+  items           Item[]
+  name            String
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt @default(now())
+}
